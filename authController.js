@@ -127,7 +127,7 @@ export const loginController = async (req, res) => {
         const result = await pool.query(queryText, [email]);
 
         if(!result.rows[0]){
-            //401 unauthorized is standard for bad credentials
+            
             console.log(result.rows[0])
             return res.status(401).json({
                 status: 'fail',
@@ -135,7 +135,7 @@ export const loginController = async (req, res) => {
             });
         }
         const user = result.rows[0];
-            //verify password
+        
         const isPassword = await bcrypt.compare(password, user.password_hash);
         if(!isPassword){
             return res.status(401).json({
@@ -194,7 +194,6 @@ export const logoutCtroller = async (req, res) => {
 
 export const getItemsController =async (req, res) =>{
  try{
-    console.log('hello')
     const {category, search, page} = req.query;
     const limit = 9;
     const currentPage = parseInt(page, 9) || 1;

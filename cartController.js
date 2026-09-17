@@ -11,6 +11,7 @@ export const getCartController = async (req, res) => {
   
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
+    console.log(userId)
     const queryText = `
       SELECT
         c.id AS cart_item_id,
@@ -28,6 +29,7 @@ export const getCartController = async (req, res) => {
     `; 
 
     const result = await pool.query(queryText, [userId]);
+    console.log(result)
     return res.status(200).json(result.rows);
 
   } catch (error) {
@@ -121,22 +123,20 @@ export const deleteCartItemController = async (req, res) => {
 };
 
 
-export const getSignleItemController = async (req, res) => {
-    try {
-        const { id } = req.params;
+export const getProductDetailsController = async(req, res) => {
+  try {
+    const {id} = req.params;
 
-        const queryText = 'SELECT * FROM products WHERE id = $1';
-        const result = await pool.query(queryText, [id]);
+    const queryText = `SELECT * FROM products WHERE id = $1`;
+    const result = await pool.query(queryText, [id])
 
-        if(result.rows.length === 0){
-            return res.status(404).json(null)
-
-        }
-        return res.status(200).json(result.rows[0]);
-    }catch(error){
-        return res.status(500).json({
-            status: 'Error', message: 'Internal Server Error.'
-        })
+    if(result.rows.length === 0) {
+      return res.status(404).json({message: 'Product not found'});
     }
-}
 
+    return res.status(200).json(result.rows[0]);
+  } catch(error) {
+    console.log('Error inside getProductById', error.message);
+    return res.status(500).json({message: 'Internal Server Error'})
+  }
+}
