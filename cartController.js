@@ -63,6 +63,7 @@ export const addToCartController = async (req, res) => {
       const result = await pool.query(updateQuery, [item_id, userId]);
   
     } else {
+
       // Scenario B: Fresh item, insert row record
       const insertQuery = "INSERT INTO cart_items (product_id, quantity, user_id) VALUES ($1, 1, $2) RETURNING *";
       await pool.query(insertQuery, [item_id, userId]); 
@@ -85,6 +86,7 @@ export const updateQuantityController = async (req, res) => {
   try {
     const { id } = req.params; 
     const { quantity } = req.body;
+
 
     if (quantity === undefined || quantity === null) {
       return res.status(400).json({ message: "Quantity value parameter is required" });

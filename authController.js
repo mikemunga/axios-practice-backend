@@ -75,9 +75,11 @@ export const getMeController = async (req, res) => {
     
     
         const queryText =`
-        SELECT id, email, first_name, is_active FROM users WHERE id=$1
+        SELECT id, email, first_name FROM users WHERE id=$1
         `;
+        console.log(decodedClaims.id,'get me controller')
         const result = await pool.query(queryText, [decodedClaims.id]);
+
         
         const user = result.rows[0];
         
@@ -98,7 +100,7 @@ export const getMeController = async (req, res) => {
             user: {
                 id: decodedClaims.id,
                 email :decodedClaims.email,
-                name :decodedClaims.name
+                name :decodedClaims.first_name
             }
         })
     }catch(error){
@@ -117,6 +119,7 @@ export const getMeController = async (req, res) => {
 }
 
 export const loginController = async (req, res) => {
+    
     try{
         
         const {email, password} = req.body;
@@ -125,6 +128,7 @@ export const loginController = async (req, res) => {
 
         if(!result.rows[0]){
             //401 unauthorized is standard for bad credentials
+            console.log(result.rows[0])
             return res.status(401).json({
                 status: 'fail',
                 message: 'Invalid email or password.'
@@ -190,10 +194,12 @@ export const logoutCtroller = async (req, res) => {
 
 export const getItemsController =async (req, res) =>{
  try{
+    console.log('hello')
     const {category, search, page} = req.query;
-    const limit = 90;
-    const currentPage = parseInt(page, 10) || 1;
+    const limit = 9;
+    const currentPage = parseInt(page, 9) || 1;
     const offset = (currentPage - 1) * limit;
+    console.log(search)
 
     let queryText = 'SELECT * FROM products WHERE 1=1';
     const queryParams = [];
@@ -208,7 +214,7 @@ export const getItemsController =async (req, res) =>{
         queryText +=` AND LOWER(title) ILIKE $${paramIndex}`;
         queryParams.push(`%${search.toLowerCase()}%`);
         paramIndex++;
-    }
+    }  
     queryText +=` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
     queryParams.push(limit, offset);
     const result = await pool.query(queryText, queryParams);

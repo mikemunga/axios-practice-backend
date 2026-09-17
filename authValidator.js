@@ -37,12 +37,15 @@ export const loginValidationRules = [
         if(result.rows.length === 0){
             throw new Error('Invalid email or password.')
         }
-        return true;
+            return true;
     }),
 
     body('password')
-    .notEmpty().withMessage('Please enter a password')    
+    .notEmpty().withMessage('Please enter a password')  
+    .isLength({min: 8, max: 128}).withMessage('Password must be at least 8 characters long.')  
 ]
+
+
 
 export const checkValidationResult = (req, res , next) => {
     const errors = validationResult(req);

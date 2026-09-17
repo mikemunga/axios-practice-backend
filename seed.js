@@ -28,7 +28,7 @@ async function bulkSeedDatabase () {
                 item.category,
                 item.image,
                 item.rating?.rate || 0,
-                item.rating?.cont || 0
+                item.rating?.count || 0
             );
         });
         const queryText =`
