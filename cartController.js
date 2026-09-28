@@ -3,10 +3,12 @@ import jwt from 'jsonwebtoken';
 
 
 export const getCartController = async (req, res) => {
-  const token= req.cookies?.token;
-  if (!token){
-    return res.status(200).json([])
-  }
+  const authHeader = req.headers.authorization;
+
+ if(!authHeader || !authHeader.startsWith('Bearer')){
+      return res.status(200).json([])
+    }
+
   try {
   
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -39,7 +41,7 @@ export const getCartController = async (req, res) => {
   }
 };
 
-// 2. ADD TO CART / INCREMENT QUANTITY
+
 export const addToCartController = async (req, res) => {
   
   try {
