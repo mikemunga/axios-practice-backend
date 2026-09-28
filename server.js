@@ -9,7 +9,7 @@ const app = express()
 dotenv.config(); 
 
 const allowedOrigins = [
-  "https://my-react-app-six-ruby.vercel.app/",
+  "https://my-react-app-six-ruby.vercel.app",
   'https://vercel.app',
   'http://localhost:5173', 
   'http://localhost:3000'
