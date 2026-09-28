@@ -3,7 +3,7 @@ import pool from './db.js';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config'
 
-// inserting into the db pd and username
+
 export const signupController = async (req, res) => {
     const {email , password, first_name} = req.body;
     

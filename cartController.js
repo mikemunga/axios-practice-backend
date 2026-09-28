@@ -43,8 +43,13 @@ export const getCartController = async (req, res) => {
 export const addToCartController = async (req, res) => {
   
   try {
-    const token = req.cookies.token;
-    if(!token) return res.status(401).json({message: 'Authentication required. No token found'});
+    const authHeader = req.headers.authorization;
+    
+    if(!authHeader || !authHeader.startsWith('Bearer')){
+      return res.status(401).json({message: 'Authorization required no tken found'})
+    }
+
+    const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const userId = decoded.id;
@@ -53,18 +58,17 @@ export const addToCartController = async (req, res) => {
       return res.status(400).json({ message: "Product ID is required" });
     }
 
-    // Check if item already exists inside the basket
+  
     const checkQuery = "SELECT * FROM cart_items WHERE product_id = $1 AND user_id = $2";
     const checkResult = await pool.query(checkQuery, [item_id, userId]);
 
     if (checkResult.rows.length > 0) {
-      // Scenario A: Item is present, update increment quantity by 1
+    
       const updateQuery = "UPDATE cart_items SET quantity = quantity + 1 WHERE product_id = $1 AND user_id = $2  RETURNING *;";
       const result = await pool.query(updateQuery, [item_id, userId]);
   
     } else {
 
-      // Scenario B: Fresh item, insert row record
       const insertQuery = "INSERT INTO cart_items (product_id, quantity, user_id) VALUES ($1, 1, $2) RETURNING *";
       await pool.query(insertQuery, [item_id, userId]); 
     }
@@ -81,7 +85,6 @@ export const addToCartController = async (req, res) => {
   
 
 
-//update cart items according to front end data
 export const updateQuantityController = async (req, res) => {
   try {
     const { id } = req.params; 
@@ -91,7 +94,7 @@ export const updateQuantityController = async (req, res) => {
     if (quantity === undefined || quantity === null) {
       return res.status(400).json({ message: "Quantity value parameter is required" });
     }
-  //return the inserted data
+
     const queryText = "UPDATE cart_items SET quantity = $1 WHERE id= $2 RETURNING *";
     const queryParams = [quantity, id];
 
@@ -105,7 +108,7 @@ export const updateQuantityController = async (req, res) => {
   }
 };
 
-// 4. DELETE ITEM ENTIRELY FROM CART
+
 export const deleteCartItemController = async (req, res) => {
       
   try {
