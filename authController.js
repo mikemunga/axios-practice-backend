@@ -21,18 +21,13 @@ export const signupController = async (req, res) => {
 
         const token = jwt.sign(
             {id: newUser.id, email: newUser.email, name: newUser.first_name}, process.env.JWT_SECRET,
-            {expiresIn : '1m'}
+            {expiresIn : '7d'}
         )        
-       //cookie configuration
-        const cookieOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'none',
-            maxAge: 7 * 24 * 60 * 1000
-        }
-        res.cookie('token', token, cookieOptions)
+       
+
         return res.status(201).json({
             status :'success',
+            token: token,
             message :`${email} registered successfully!`,
             data:{
                 user:{
@@ -43,7 +38,7 @@ export const signupController = async (req, res) => {
             }  
         });       
  
-    }catch(error){
+      }catch(error){
         console.log(error)
         if(error.code === '23505'){
             return res.status(409).json({
@@ -60,10 +55,11 @@ export const signupController = async (req, res) => {
 
 
 export const getMeController = async (req, res) => {
-    
-    try{
-        const token = req.cookies.token;
 
+    try{
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+        console.log(token, 'token')
         if(!token) {
             return res.status(401).json({
                 success:false,
@@ -77,18 +73,14 @@ export const getMeController = async (req, res) => {
         const queryText =`
         SELECT id, email, first_name FROM users WHERE id=$1
         `;
-        console.log(decodedClaims.id,'get me controller')
+    
         const result = await pool.query(queryText, [decodedClaims.id]);
 
         
         const user = result.rows[0];
         
         if(!user){
-            res.clearCookie('token',{
-                httpOnly: true,
-                secure: process.env.NODEENV === 'production',
-                sameSite : 'strict'
-            })
+    
             return res.status(404).json({
                 success: false,
                 user: null,
@@ -104,12 +96,6 @@ export const getMeController = async (req, res) => {
             }
         })
     }catch(error){
-        console.log(error)
-        res.clearCookie('token',{
-            httpOnly:true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict'
-        })
         return res.status(401).json({
             success:false,
             user: null,
@@ -127,8 +113,7 @@ export const loginController = async (req, res) => {
         const result = await pool.query(queryText, [email]);
 
         if(!result.rows[0]){
-            
-            console.log(result.rows[0])
+    
             return res.status(401).json({
                 status: 'fail',
                 message: 'Invalid email or password.'
@@ -145,17 +130,12 @@ export const loginController = async (req, res) => {
         }
         
         const token = jwt.sign(
-            {id: user.id, email:user.email, name: user.firstt_name},process.env.JWT_SECRET, {expiresIn :'7d'}
+            {id: user.id, email:user.email, name: user.first_name},process.env.JWT_SECRET, {expiresIn :'7d'}
         )
 
-        const cookieOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        }
-        res.cookie('token', token, cookieOptions);
+    
         return res.status(200).json({
+            token: token,
             status: 'success',
             message: `Welcome back! ${user.first_name}`,
             data: {
@@ -177,11 +157,7 @@ export const loginController = async (req, res) => {
         
 export const logoutCtroller = async (req, res) => {
     try{
-    res.clearCookie('token', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-    });
+
     return res.status(200).json({
         status: 'success',
         message: 'Logged out successfully!'
@@ -193,7 +169,6 @@ export const logoutCtroller = async (req, res) => {
 
 
 export const getItemsController =async (req, res) =>{
-    console.log('hit')
  try{
     const {category, search, page} = req.query;
     const limit = 9;

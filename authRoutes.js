@@ -11,7 +11,7 @@ import { loginController, signupController , getMeController, logoutCtroller} fr
 const router = express.Router();
 
 const authLimiter = rateLimit({
-   // windowMs: 15* 60 * 1000, //15 minutes
+    windowMs: 15* 60 * 1000, //15 minutes
     max: 10,
     message: {message: 'Too many requests from this Ip. Please try again in 15 minutes.'},
     standardHeaders: true,

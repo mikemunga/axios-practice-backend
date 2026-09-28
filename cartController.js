@@ -11,7 +11,6 @@ export const getCartController = async (req, res) => {
   
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
-    console.log(userId)
     const queryText = `
       SELECT
         c.id AS cart_item_id,
@@ -29,7 +28,6 @@ export const getCartController = async (req, res) => {
     `; 
 
     const result = await pool.query(queryText, [userId]);
-    console.log(result)
     return res.status(200).json(result.rows);
 
   } catch (error) {
