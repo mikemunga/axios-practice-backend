@@ -10,7 +10,6 @@ dotenv.config();
 
 const allowedOrigins = [
  'https://my-react-app-six-ruby.vercel.app',
-  'https://vercel.app',
   'http://localhost:5173', 
   'http://localhost:3000'
 ];
@@ -22,7 +21,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
  
-app.options('{*splat}', cors()); 
 
 app.use(express.json());
 app.use(cookieParser());  

@@ -193,6 +193,7 @@ export const logoutCtroller = async (req, res) => {
 
 
 export const getItemsController =async (req, res) =>{
+    console.log('hit')
  try{
     const {category, search, page} = req.query;
     const limit = 9;
