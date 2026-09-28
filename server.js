@@ -9,7 +9,7 @@ const app = express()
 dotenv.config(); 
 
 const allowedOrigins = [
-  'https://vercel.app',
+  "https://my-react-app-six-ruby.vercel.app/",
   'https://vercel.app',
   'http://localhost:5173', 
   'http://localhost:3000'
@@ -21,9 +21,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-// ❌ OLD CRASHING LINE: app.options('*', cors()); 
-//  FIX FOR EXPRESS 5: 
+ 
 app.options('{*splat}', cors()); 
 
 app.use(express.json());
