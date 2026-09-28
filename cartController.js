@@ -3,13 +3,14 @@ import jwt from 'jsonwebtoken';
 
 
 export const getCartController = async (req, res) => {
-  const authHeader = req.headers.authorization;
+const authHeader = req.headers.authorization;
 
  if(!authHeader || !authHeader.startsWith('Bearer')){
       return res.status(200).json([])
     }
-
   try {
+
+    const token = authHeader.split(' ')[1];
   
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
@@ -34,7 +35,7 @@ export const getCartController = async (req, res) => {
 
   } catch (error) {
     console.error("Error inside getCart:", error.message);
-    if (error.name === 'jsonWebTonError' || error.name === 'TokenExpiredError'){
+    if (error.name === 'jsonWebTokenError' || error.name === 'TokenExpiredError'){
       return res.status(200).json([]);
     }
     res.status(500).json({ message: "Internal Server Error" });
