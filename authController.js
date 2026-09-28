@@ -198,7 +198,7 @@ export const getItemsController =async (req, res) =>{
     const limit = 9;
     const currentPage = parseInt(page, 9) || 1;
     const offset = (currentPage - 1) * limit;
-    console.log(search)
+  
 
     let queryText = 'SELECT * FROM products WHERE 1=1';
     const queryParams = [];

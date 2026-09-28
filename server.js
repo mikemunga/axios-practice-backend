@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser';
 import router from './productRoutes.js';
 
 const app = express()  
-dotenv.config()
+dotenv.config
   app.use(cors({
         origin: process.env.CLIENT_URL ||'http://localhost:5173',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -15,9 +15,9 @@ dotenv.config()
         secure: true
     })); 
 app.use(express.json());
-app.use(cookieParser());
+app.use(cookieParser());  
                  
-app.use('/api/auth', authRoutes);   
+app.use('/api/auth', authRoutes);    
 app.use('/api',router)    
      
 const PORT=process.env.PORT || 5000;
