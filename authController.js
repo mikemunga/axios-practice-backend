@@ -183,36 +183,46 @@ export const logoutCtroller = async (req, res) => {
 }
 
 
-export const getItemsController =async (req, res) =>{
- try{
-    const {category, search, page} = req.query;
-    const limit = 9;
-    const currentPage = parseInt(page, 8) || 1;
-    const offset = (currentPage - 1) * limit;
-  
 
-    let queryText = 'SELECT * FROM products WHERE 1=1';
+export const getItemsController = async (req, res) => {
+ try {
+    const { category, search, page } = req.query;
+    const currentPage = parseInt(page, 10) || 1;
+    const limit = 8;
+    const offset = (currentPage - 1) * limit;
+
+    let queryText = 'SELECT * FROM products';
     const queryParams = [];
+    const conditions = [];
     let paramIndex = 1;
 
-    if(category){
-        queryText +=` AND category =$${paramIndex}`;
+    
+    if (category) {
+        conditions.push(`category = \$${paramIndex}`);
         queryParams.push(category);
         paramIndex++;
     }
-    if(search) {
-        queryText +=` AND LOWER(title) ILIKE $${paramIndex}`;
-        queryParams.push(`%${search.toLowerCase()}%`);
-        paramIndex++;
-    }  
-    queryText +=` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-    queryParams.push(limit, offset);
-    const result = await pool.query(queryText, queryParams);
-    return res.status(200).json(result.rows)
- }catch(error) {    
-    console.error("Error inside getItems", error.message);
-    res.status(500).json({message: 'Internal server Error'})
- }
-}
-  
 
+    if (search) {
+    
+        conditions.push(`title ILIKE \$${paramIndex}`);
+        queryParams.push(`%${search}%`);
+        paramIndex++;
+    }
+
+
+    if (conditions.length > 0) {
+        queryText += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    queryText += ` ORDER BY id DESC LIMIT \$${paramIndex} OFFSET \$${paramIndex + 1}`;
+    queryParams.push(limit, offset);
+
+    const result = await pool.query(queryText, queryParams);
+    return res.status(200).json(result.rows);
+
+ } catch (error) {    
+    console.error("Error inside getItems:", error.message);
+    return res.status(500).json({ message: 'Internal server Error' });
+ }
+};
