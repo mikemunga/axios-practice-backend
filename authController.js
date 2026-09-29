@@ -24,10 +24,14 @@ export const signupController = async (req, res) => {
             {expiresIn : '7d'}
         )        
        
-
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none',
+            maxAge: 7 * 24 * 60 * 1000
+        })
         return res.status(201).json({
             status :'success',
-            token: token,
             message :`${email} registered successfully!`,
             data:{
                 user:{
@@ -57,8 +61,7 @@ export const signupController = async (req, res) => {
 export const getMeController = async (req, res) => {
 
     try{
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
+        const token = req.cookies.token
         console.log(token, 'token')
         if(!token) {
             return res.status(401).json({
@@ -132,10 +135,15 @@ export const loginController = async (req, res) => {
         const token = jwt.sign(
             {id: user.id, email:user.email, name: user.first_name},process.env.JWT_SECRET, {expiresIn :'7d'}
         )
-
+        
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure:true,
+            sameSite: 'none',
+            maxAge: 7 * 24 * 60 * 1000
+        })
     
         return res.status(200).json({
-            token: token,
             status: 'success',
             message: `Welcome back! ${user.first_name}`,
             data: {
@@ -157,11 +165,18 @@ export const loginController = async (req, res) => {
         
 export const logoutCtroller = async (req, res) => {
     try{
+    res.clearCookie('token',{
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+    })    
 
     return res.status(200).json({
         status: 'success',
         message: 'Logged out successfully!'
     })
+    
+
     }catch(error){ 
         return res.status(500).json({status: 'error', message:'Internal server error'})
     }

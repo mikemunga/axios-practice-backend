@@ -3,15 +3,14 @@ import jwt from 'jsonwebtoken';
 
 
 export const getCartController = async (req, res) => {
-const authHeader = req.headers.authorization;
-
- if(!authHeader || !authHeader.startsWith('Bearer')){
-      return res.status(200).json([])
-    }
-  try {
-
-    const token = authHeader.split(' ')[1];
   
+  try {
+  const token = req.cookies.token;
+
+  if(!token) {
+    return res.status(200).json([])
+  }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
     const queryText = `
@@ -46,17 +45,16 @@ const authHeader = req.headers.authorization;
 export const addToCartController = async (req, res) => {
   
   try {
-    const authHeader = req.headers.authorization;
+    const token = req.cookies.token;
     
-    if(!authHeader || !authHeader.startsWith('Bearer')){
-      return res.status(401).json({message: 'Authorization required no tken found'})
+    if(!token){
+      return res.status(401).json({message: 'Authorization required no token found'})
     }
 
-    const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     const userId = decoded.id;
     const { item_id } = req.body;
+
     if (!item_id) {
       return res.status(400).json({ message: "Product ID is required" });
     }
