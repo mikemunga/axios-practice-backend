@@ -187,7 +187,7 @@ export const getItemsController =async (req, res) =>{
  try{
     const {category, search, page} = req.query;
     const limit = 9;
-    const currentPage = parseInt(page, 9) || 1;
+    const currentPage = parseInt(page, 8) || 1;
     const offset = (currentPage - 1) * limit;
   
 
