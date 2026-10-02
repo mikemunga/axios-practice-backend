@@ -61,8 +61,7 @@ export const signupController = async (req, res) => {
 export const getMeController = async (req, res) => {
 
     try{
-        const token = req.cookies.token
-        console.log(token, 'token')
+        const token = req.cookies.token;
         if(!token) {
             return res.status(401).json({
                 success:false,
