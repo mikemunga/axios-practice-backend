@@ -196,7 +196,7 @@ export const getItemsController = async (req, res) => {
     let paramIndex = 1;
 
     
-    if (category) {
+    if (category && category !=='all') {
         conditions.push(`category = \$${paramIndex}`);
         queryParams.push(category);
         paramIndex++;
